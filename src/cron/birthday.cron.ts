@@ -3,9 +3,9 @@ import user from '../models/user.model';
 import { sendBirthDayEmail } from '../utils/sent-birthday-email.util';
 import failedEmailLog from '../models/failed-email-log.model';
 
+// cron for sending email to birthday user (runs every hour)
 const birthdayJob = new cron.CronJob('0 * * * *', async () => {
   const currentDate: Date = new Date();
-  // // query all user
   const users = await user.find({ isSentEmail: false });
   for (const i of users) {
     const userBirthday: Date = new Date(i.birthday);
@@ -23,6 +23,7 @@ const birthdayJob = new cron.CronJob('0 * * * *', async () => {
   }
 });
 
+// cron for retrying failed email sent (runs every hour)
 const failedRetry = new cron.CronJob('0 * * * *', async () => {
   const currentDate: Date = new Date();
   const failedEmail = await failedEmailLog.find({ time: { $gte: currentDate, $lte: currentDate } });
