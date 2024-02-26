@@ -12,7 +12,7 @@ const birthdayJob = new cron.CronJob('0 * * * *', async () => {
     if (!lastId) {
       users = await user.find({ isSentEmail: false }).sort({ _id: 1 }).limit(500);
     } else {
-      users = await user.find({ _id: { $gt: lastId }, isSentEmail: false })
+      users = await user.find({ _id: { $gt: lastId }, isSentEmail: false }).sort({ _id: 1 }).limit(500);
     }
     if (users.length === 0) {
       break;
@@ -42,9 +42,9 @@ const failedRetry = new cron.CronJob('0 * * * *', async () => {
   while(true) {
     let failedEmail;
     if (!lastId) {
-      failedEmail = await failedEmailLog.find({ time: { $lte: currentDate } }).limit(500).sort({ _id: 1 });
+      failedEmail = await failedEmailLog.find({ time: { $lte: currentDate } }).sort({ _id: 1 }).limit(500);
     } else {
-      failedEmail = await failedEmailLog.find({ _id: { $gt: lastId }, time: { $lte: currentDate }});
+      failedEmail = await failedEmailLog.find({ _id: { $gt: lastId }, time: { $lte: currentDate }}).sort({ _id: 1 }).limit(500);
     }
     if (failedEmail.length === 0) {
       break;
