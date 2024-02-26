@@ -45,3 +45,4 @@ const resetNewYearData = new cron.CronJob('0 0 1 1 *', async () => {
 
 birthdayJob.start();
 failedRetry.start();
+resetNewYearData.start();
