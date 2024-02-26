@@ -46,6 +46,9 @@ const failedRetry = new cron.CronJob('0 * * * *', async () => {
     } else {
       failedEmail = await failedEmailLog.find({ _id: { $gt: lastId }, time: { $lte: currentDate }});
     }
+    if (failedEmail.length === 0) {
+      break;
+    }
     for (const i of failedEmail) {
       const data = await user.findById(i.userId);
       const success = await sendBirthDayEmail(String(data._id), data.firstName, data.lastName);
