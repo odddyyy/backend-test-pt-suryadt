@@ -26,7 +26,7 @@ const birthdayJob = new cron.CronJob('0 * * * *', async () => {
 // cron for retrying failed email sent (runs every hour)
 const failedRetry = new cron.CronJob('0 * * * *', async () => {
   const currentDate: Date = new Date();
-  const failedEmail = await failedEmailLog.find({ time: { $gte: currentDate, $lte: currentDate } });
+  const failedEmail = await failedEmailLog.find({ time: { $lte: currentDate } });
   for (const i of failedEmail) {
     const data = await user.findById(i.userId);
     const success = await sendBirthDayEmail(String(data._id), data.firstName, data.lastName);
@@ -36,6 +36,11 @@ const failedRetry = new cron.CronJob('0 * * * *', async () => {
       await failedEmailLog.deleteOne({ _id: i._id });
     }
   }
+});
+
+// cron for resetting all the isSentEmail flag to false (runs every 1st of January)
+const resetNewYearData = new cron.CronJob('0 0 1 1 *', async () => {
+  await user.updateMany({ isSentEmail: true }, { isSentEmail: false });
 });
 
 birthdayJob.start();
